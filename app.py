@@ -11,17 +11,30 @@ from flask import Flask
 from flask import request
 from flask import make_response
 from chatterbot import ChatBot
+from chatterbot.trainers import ListTrainer
 
 # Flask app should start in global layout
 app = Flask(__name__)
 
 chatbot = ChatBot(
-    'Steve Mao',
-    trainer='chatterbot.trainers.ChatterBotCorpusTrainer'
+    'mitsuyo',
+    storage_adapter={
+        'import_path': "chatterbot.storage.MongoDatabaseAdapter",
+        'database_uri': os.getenv('MONGODB_URI', '127.0.0.1:27017'),
+        'database': 'heroku_sm0n0l18',
+    },
+    # trainer='chatterbot.trainers.ChatterBotCorpusTrainer'
 )
 
-# Train based on the japanese corpus
-chatbot.train("chatterbot.corpus.japanese")
+# Train based on the corpus
+# chatbot.train("chatterbot.corpus.english")
+# chatbot.train("chatterbot.corpus.chinese")
+
+chatbot.set_trainer(ListTrainer)
+
+chatbot.train([
+
+])
 
 @app.route('/webhook', methods=['POST'])
 def webhook():
